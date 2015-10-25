@@ -75,7 +75,6 @@ void UBServer::dataSentEvent(qint64 size) {
 
     if (!m_size) {
         delete m_send_buffer.dequeue();
-        QLOG_DEBUG() << "The message sended";
 
         m_size = 0;
     }
@@ -90,8 +89,6 @@ void UBServer::dataReadyEvent() {
 
         m_receive_buffer.enqueue(data);
         emit dataReady(*data);
-
-        QLOG_DEBUG() << "We received: " << data;
 
         m_data = m_data.mid(bytes + qstrlen(PACKET_END));
     }
