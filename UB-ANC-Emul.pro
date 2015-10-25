@@ -22,13 +22,13 @@ include (apm_planner.pri)
 INCLUDEPATH += \
     engine \
 
-SOURCES += \
-    engine/UBEngine.cpp \
-    engine/UBObject.cpp \
-    engine/UBServer.cpp \
-
 HEADERS += \
     engine/UBEngine.h \
     engine/UBObject.h \
     engine/UBServer.h \
     config.h \
+
+SOURCES += \
+    engine/UBEngine.cpp \
+    engine/UBObject.cpp \
+    engine/UBServer.cpp \
