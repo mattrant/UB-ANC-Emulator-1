@@ -35,10 +35,10 @@ void UBEngine::startEngine() {
     double lat = 43.000755;
     double lon = -78.776023;
 
-    QStringList args = QCoreApplication::arguments();
-    if (args.count() > 2) {
+    int idx = QCoreApplication::arguments().indexOf("--waypoints");
+    if (idx > 0) {
         UASWaypointManager wpm;
-        wpm.loadWaypoints(args[2]);
+        wpm.loadWaypoints(QCoreApplication::arguments().at(idx + 1));
 
         if (wpm.getWaypointEditableList().count()) {
             const Waypoint* wp = wpm.getWaypoint(0);
@@ -94,9 +94,9 @@ void UBEngine::uavAddedEvent(UASInterface* uav) {
     if (!uav)
         return;    
 
-    QStringList args = QCoreApplication::arguments();
-    if (args.count() > 2) {
-        uav->getWaypointManager()->loadWaypoints(args[2]);
+    int idx = QCoreApplication::arguments().indexOf("--waypoints");
+    if (idx > 0) {
+        uav->getWaypointManager()->loadWaypoints(QCoreApplication::arguments().at(idx + 1));
         uav->getWaypointManager()->writeWaypoints();
     }
 
@@ -206,10 +206,10 @@ void UBEngine::positionChangeEvent(UASInterface* uav) {
         if (!wp)
             continue;
 
-        if (wp->getAction() != MAV_CMD_NAV_ROI)
+        if (wp->getAction() != MAV_CMD_DO_SET_ROI)
             continue;
 
-        double dist = UBEngine::Distance3D(wp->getLatitude(), wp->getLongitude(), wp->getAltitude(), uav->getLatitude(), uav->getLongitude(), uav->getAltitudeAMSL());
+        double dist = UBEngine::Distance3D(wp->getLatitude(), wp->getLongitude(), uav->getAltitudeAMSL(), uav->getLatitude(), uav->getLongitude(), uav->getAltitudeAMSL());
 
         if (dist < obj->getVR())
             obj->snrSendData(QByteArray(1, wp->getId()) + QByteArray(1, true));
