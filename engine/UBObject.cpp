@@ -44,12 +44,12 @@ void UBObject::setAgent(const QString& path, const QStringList& args) {
     m_agent->setArguments(args);
 }
 
-void UBObject::start(int port) {
+void UBObject::startObject(int port) {
     m_firmware->start();
     m_link = LinkManagerFactory::addTcpConnection(QHostAddress::LocalHost, "", port + 2, false);
 
-    m_net_server->start((PHY_PORT - MAV_PORT) + port);
-    m_snr_server->start((SNR_PORT - MAV_PORT) + port);
+    m_net_server->startServer((PHY_PORT - MAV_PORT) + port);
+    m_snr_server->startServer((SNR_PORT - MAV_PORT) + port);
 
     QTimer::singleShot(CONNECT_WAIT, this, SLOT(startAgent()));
 }
@@ -68,27 +68,4 @@ void UBObject::startConnection() {
 
 void UBObject::objectTracker() {
     ;
-}
-
-void UBObject::stop() {
-    m_timer->stop();
-
-    if (m_link) {
-        LinkManager::instance()->getLink(m_link)->disconnect();
-
-        m_uav = NULL;
-        m_link = 0;
-    }
-
-    if (m_net_server)
-        m_net_server->stop();
-
-    if (m_snr_server)
-        m_snr_server->stop();
-
-    if (m_firmware)
-        m_firmware->terminate();
-
-    if (m_agent)
-        m_agent->terminate();
 }

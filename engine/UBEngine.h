@@ -22,13 +22,7 @@ protected:
 signals:
 
 public slots:
-//    void setSysObjects(QList<CObject*> objs);
-
-//    void sensor(CObject* obj);
-//    void network(CObject* obj);
-
     void startEngine();
-    void stopEngine();
 
     void networkEvent(UBObject *obj, const QByteArray &data);
     void positionChangeEvent(UASInterface *uav);
@@ -37,7 +31,6 @@ protected slots:
     void engineTracker(void);
 
     void uavAddedEvent(UASInterface* uav);
-    void uavDeletedEvent(UASInterface *uav);
 
 public:
     static const double PI;

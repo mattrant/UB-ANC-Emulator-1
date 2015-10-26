@@ -23,17 +23,13 @@ signals:
     void dataReady(const QByteArray& data);
 
 public slots:
-    void start(int port);
-    void stop();
-
+    void startServer(int port);
     void sendData(const QByteArray& data);
 
 protected slots:
     void newConnectionEvent();
-
     void dataSentEvent(qint64);
     void dataReadyEvent();
-    void disconnectedEvent();
 
     void serverTracker();
 

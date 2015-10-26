@@ -21,23 +21,8 @@ UBServer::UBServer(QObject *parent) : QObject(parent),
     connect(m_timer, SIGNAL(timeout()), this, SLOT(serverTracker()));
 }
 
-void UBServer::start(int port) {
+void UBServer::startServer(int port) {
     m_server->listen(QHostAddress::Any, port);
-    m_timer->start();
-}
-
-void UBServer::stop() {
-    m_timer->stop();
-
-    if (m_socket)
-        m_socket->close();
-
-    m_server->close();
-
-    m_size = 0;
-    m_data.clear();
-    m_send_buffer.clear();
-    m_receive_buffer.clear();
 }
 
 void UBServer::newConnectionEvent() {
@@ -47,8 +32,9 @@ void UBServer::newConnectionEvent() {
     m_socket = m_server->nextPendingConnection();
 
     connect(m_socket, SIGNAL(bytesWritten(qint64)), this, SLOT(dataSentEvent(qint64)));
-    connect(m_socket, SIGNAL(disconnected()), this, SLOT(disconnectedEvent()));
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(dataReadyEvent()));
+
+    m_timer->start();
 }
 
 void UBServer::sendData(const QByteArray& data) {
@@ -94,19 +80,8 @@ void UBServer::dataReadyEvent() {
     }
 }
 
-void UBServer::disconnectedEvent() {
-    disconnect(m_socket, SIGNAL(bytesWritten(qint64)), this, SLOT(dataSentEvent(qint64)));
-    disconnect(m_socket, SIGNAL(disconnected()), this, SLOT(disconnectedEvent()));
-    disconnect(m_socket, SIGNAL(readyRead()), this, SLOT(dataReadyEvent()));
-
-    m_socket = NULL;
-}
-
 void UBServer::serverTracker() {
-    if (!m_socket)
-        return;
-
-    if (!m_send_buffer.isEmpty() && !m_size) {
+    if (!m_size && !m_send_buffer.isEmpty()) {
         QByteArray data(*m_send_buffer.first());
         data.append(PACKET_END);
         m_size = data.size();

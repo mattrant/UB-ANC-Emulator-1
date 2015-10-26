@@ -18,13 +18,11 @@ const double UBEngine::EarthRadiusKm = 6378.137; // WGS-84
 
 UBEngine::UBEngine(QObject *parent) : QObject(parent)
 {
-    connect(UASManager::instance(), SIGNAL(UASCreated(UASInterface*)), this, SLOT(uavAddedEvent(UASInterface*)));
-    connect(UASManager::instance(), SIGNAL(UASDeleted(UASInterface*)), this, SLOT(uavDeletedEvent(UASInterface*)));
-
     m_timer = new QTimer(this);
     m_timer->setInterval(ENGINE_TRACK_RATE);
 
     connect(m_timer, SIGNAL(timeout()), this, SLOT(engineTracker()));
+    connect(UASManager::instance(), SIGNAL(UASCreated(UASInterface*)), this, SLOT(uavAddedEvent(UASInterface*)));
 }
 
 void UBEngine::engineTracker(void) {
@@ -67,27 +65,13 @@ void UBEngine::startEngine() {
         args << QString("--port") << QString::number(port);
 
         obj->setAgent(path, args);
-        obj->start(port);
+        obj->startObject(port);
 
         m_objs.append(obj);
         _instance++;
     }
 
     m_timer->start();
-}
-
-void UBEngine::stopEngine() {
-    m_timer->stop();
-
-    foreach (UBObject* obj, m_objs) {
-        if (!obj)
-            continue;
-
-        obj->stop();
-        delete obj;
-    }
-
-    m_objs.clear();
 }
 
 void UBEngine::uavAddedEvent(UASInterface* uav) {
@@ -110,36 +94,11 @@ void UBEngine::uavAddedEvent(UASInterface* uav) {
     int i = link->getPort() - MAV_PORT;
 
     UBObject* obj = m_objs[i / 10];
-    if (!obj)
-        return;
-
     obj->setUAV(uav);
     obj->setCR(COMM_RANGE);
     obj->setVR(VISUAL_RANGE);
 
     connect(obj, SIGNAL(netDataReady(UBObject*,QByteArray)), this, SLOT(networkEvent(UBObject*,QByteArray)));
-}
-
-void UBEngine::uavDeletedEvent(UASInterface* uav) {
-    if (!uav)
-        return;
-
-    disconnect(uav, SIGNAL(globalPositionChanged(UASInterface*,double,double,double,quint64)), this, SLOT(positionChangeEvent(UASInterface*)));
-
-    foreach(UBObject* obj, m_objs) {
-        if (!obj)
-            continue;
-
-        if (obj->getUAV() == uav) {
-            obj->stop();
-            obj->setUAV(NULL);
-            disconnect(obj, SIGNAL(netDataReady(UBObject*,QByteArray)), this, SLOT(networkEvent(UBObject*,QByteArray)));
-
-            break;
-        }
-    }
-
-    QLOG_WARN() << "UAV number " << uav->getUASID() << " is lost!";
 }
 
 double UBEngine::DistanceBetweenLatLng(double lat1, double lon1, double lat2, double lon2) {
@@ -162,9 +121,6 @@ void UBEngine::positionChangeEvent(UASInterface* uav) {
 
     UBObject* obj = NULL;
     foreach(UBObject* _obj, m_objs) {
-        if (!_obj)
-            continue;
-
         if (_obj->getUAV() == uav) {
             obj = _obj;
             break;
@@ -175,9 +131,6 @@ void UBEngine::positionChangeEvent(UASInterface* uav) {
         return;
 
     foreach (UBObject* _obj, m_objs) {
-        if (!_obj)
-            continue;
-
         UASInterface* _uav = _obj->getUAV();
         if (!_uav)
             continue;
@@ -198,14 +151,7 @@ void UBEngine::positionChangeEvent(UASInterface* uav) {
             _obj->snrSendData(QByteArray(1, obj->getUAV()->getUASID()) + QByteArray(1, false));
     }
 
-    UASWaypointManager* wpm = uav->getWaypointManager();
-    if (!wpm)
-        return;
-
-    foreach (Waypoint* wp, wpm->getWaypointEditableList()) {
-        if (!wp)
-            continue;
-
+    foreach (Waypoint* wp, uav->getWaypointManager()->getWaypointEditableList()) {
         if (wp->getAction() != MAV_CMD_DO_SET_ROI)
             continue;
 
@@ -219,17 +165,11 @@ void UBEngine::positionChangeEvent(UASInterface* uav) {
 }
 
 void UBEngine::networkEvent(UBObject* obj, const QByteArray& data) {
-    if (!obj)
-        return;
-
     UASInterface* uav = obj->getUAV();
     if (!uav)
         return;
 
     foreach (UBObject* _obj, m_objs) {
-        if (!_obj)
-            continue;
-
         UASInterface* _uav = _obj->getUAV();
         if (!_uav)
             continue;

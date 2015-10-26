@@ -60,8 +60,7 @@ public slots:
     void setFirmware(const QString& path, const QStringList& args);
     void setAgent(const QString& path, const QStringList& args);
 
-    void start(int port);
-    void stop();
+    void startObject(int port);
 
 public:
     UASInterface* getUAV(void) {return m_uav;}
