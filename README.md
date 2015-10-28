@@ -53,4 +53,6 @@ For building and configuring UB-ANC Emulator, follow the steps below:
 
 6) cp path_to_ArduCopter.elf_and_eeprom.bin objects/your_drone_name/firmware_and_eeprom.bin
 
-7) ./emulator --waypoints mission.txt
+7) cp path_to_agent objects/your_drone_name/agent
+
+8) ./emulator --waypoints mission.txt
