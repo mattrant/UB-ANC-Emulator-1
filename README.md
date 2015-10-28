@@ -56,3 +56,5 @@ For building and configuring UB-ANC Emulator, follow the steps below:
 7) cp path_to_agent objects/your_drone_name/agent
 
 8) ./emulator --waypoints mission.txt
+
+9) connect to TCP ports 5763, 5773, ..., each port represents a drone.
