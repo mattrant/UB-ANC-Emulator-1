@@ -57,4 +57,6 @@ For building and configuring UB-ANC Emulator, follow the steps below:
 
 8) ./emulator --waypoints mission.txt
 
-9) connect to TCP ports 5763, 5773, ..., each port represents a drone.
+-----------------------------------
+
+Each port represents a drone, starting from 5763, 5773, etc. Mission Planner, APM Planner, QGroundStation, MAVProxy, ..., can be used to connect to drones, and see them in action.
