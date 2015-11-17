@@ -8,7 +8,7 @@ QT       += core
 
 QT       -= gui
 
-TARGET = emulator
+TARGET = ub-anc-emul
 CONFIG   += console
 CONFIG   -= app_bundle
 
