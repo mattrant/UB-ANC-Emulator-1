@@ -9,6 +9,10 @@ class QTimer;
 class UBObject;
 class UASInterface;
 
+namespace GeographicLib {
+class LocalCartesian;
+}
+
 class UBEngine : public QObject
 {
     Q_OBJECT
@@ -18,6 +22,10 @@ public:
 protected:
     QTimer* m_timer;
     QList<UBObject*> m_objs;
+
+    GeographicLib::LocalCartesian* m_proj;
+
+    double distance(double lat1, double lon1, double alt1, double lat2, double lon2, double alt2);
 
 signals:
 
@@ -32,12 +40,6 @@ protected slots:
 
     void uavAddedEvent(UASInterface* uav);
 
-public:
-    static const double PI;
-    static const double EarthRadiusKm;
-
-    static double DistanceBetweenLatLng(double lat1, double lon1, double lat2, double lon2);
-    static double Distance3D(double lat1, double lon1, double alt1, double lat2, double lon2, double alt2);
 };
 
 #endif // UBENGINE_H
