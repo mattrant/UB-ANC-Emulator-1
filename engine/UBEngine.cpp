@@ -181,5 +181,5 @@ double UBEngine::distance(double lat1, double lon1, double alt1, double lat2, do
    m_proj->Forward(lat1, lon1, alt1, x1, y1, z1);
    m_proj->Forward(lat2, lon2, alt2, x2, y2, z2);
 
-   return sqrt(pow(static_cast<double>(x1 - x2), 2) + pow(static_cast<double>(y1 - y2), 2) + pow(static_cast<double>(z1 - z2), 2));
+   return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2) + pow(z1 - z2, 2));
 }
