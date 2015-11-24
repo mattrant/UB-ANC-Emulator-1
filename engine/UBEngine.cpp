@@ -13,13 +13,7 @@
 #include "LinkManager.h"
 #include "UASWaypointManager.h"
 
-#include <GeographicLib/Geocentric.hpp>
-#include <GeographicLib/LocalCartesian.hpp>
-
-using namespace GeographicLib;
-
-UBEngine::UBEngine(QObject *parent) : QObject(parent),
-    m_proj(NULL)
+UBEngine::UBEngine(QObject *parent) : QObject(parent)
 {
     m_timer = new QTimer(this);
     m_timer->setInterval(ENGINE_TRACK_RATE);
@@ -48,8 +42,6 @@ void UBEngine::startEngine() {
             lon = wp->getLongitude();
         }
     }
-
-    m_proj = new LocalCartesian(lat, lon, 0, Geocentric::WGS84());
 
     QDir dir(OBJECTS_PATH);
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -129,7 +121,7 @@ void UBEngine::positionChangeEvent(UASInterface* uav) {
         if (_uav == uav)
             continue;
 
-        double dist = distance(_uav->getLatitude(), _uav->getLongitude(), _uav->getAltitudeAMSL(), uav->getLatitude(), uav->getLongitude(), uav->getAltitudeAMSL());
+        double dist = sqrt(pow(uav->getLocalX() - _uav->getLocalX(), 2) + pow(uav->getLocalY() - _uav->getLocalY(), 2) + pow(uav->getLocalZ() - _uav->getLocalZ(), 2));
 
         if (dist < obj->getVR())
             obj->snrSendData(QByteArray(1, _obj->getUAV()->getUASID()) + QByteArray(1, true));
@@ -146,7 +138,7 @@ void UBEngine::positionChangeEvent(UASInterface* uav) {
         if (wp->getAction() != MAV_CMD_DO_SET_ROI)
             continue;
 
-        double dist = distance(wp->getLatitude(), wp->getLongitude(), uav->getAltitudeAMSL(), uav->getLatitude(), uav->getLongitude(), uav->getAltitudeAMSL());
+        double dist = sqrt(pow(uav->getLocalX() - wp->getX(), 2) + pow(uav->getLocalY() - wp->getY(), 2) + pow(uav->getLocalZ() - wp->getZ(), 2));
 
         if (dist < obj->getVR())
             obj->snrSendData(QByteArray(1, wp->getId()) + QByteArray(1, true));
@@ -168,18 +160,9 @@ void UBEngine::networkEvent(UBObject* obj, const QByteArray& data) {
 //        if (_uav == uav)
 //            continue;
 
-        double dist = distance(_uav->getLatitude(), _uav->getLongitude(), _uav->getAltitudeAMSL(), uav->getLatitude(), uav->getLongitude(), uav->getAltitudeAMSL());
+        double dist = sqrt(pow(uav->getLocalX() - _uav->getLocalX(), 2) + pow(uav->getLocalY() - _uav->getLocalY(), 2) + pow(uav->getLocalZ() - _uav->getLocalZ(), 2));
 
         if (dist < obj->getCR())
             _obj->netSendData(data);
     }
-}
-
-double UBEngine::distance(double lat1, double lon1, double alt1, double lat2, double lon2, double alt2) {
-   double x1, x2, y1, y2, z1, z2;
-
-   m_proj->Forward(lat1, lon1, alt1, x1, y1, z1);
-   m_proj->Forward(lat2, lon2, alt2, x2, y2, z2);
-
-   return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2) + pow(z1 - z2, 2));
 }
