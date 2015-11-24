@@ -61,8 +61,7 @@ INCLUDEPATH += \
 DEFINES += EXTERNAL_USE
 
 INCLUDEPATH += \
-    apm_planner/libs/opmapcontrol/src/core \
-    apm_planner/libs/opmapcontrol/src/internals \
+    apm_planner/libs/opmapcontrol/src/internals/projections \
 
 SOURCES += \
     apm_planner/libs/opmapcontrol/src/core/point.cpp \
