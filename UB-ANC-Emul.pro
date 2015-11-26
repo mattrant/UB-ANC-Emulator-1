@@ -17,7 +17,7 @@ TEMPLATE = app
 #
 # APM Planner Library
 #
-include (apm_planner.pri)
+include(apm_planner.pri)
 
 INCLUDEPATH += \
     engine \
