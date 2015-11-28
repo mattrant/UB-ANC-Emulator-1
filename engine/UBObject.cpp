@@ -67,5 +67,4 @@ void UBObject::startConnection() {
 }
 
 void UBObject::objectTracker() {
-    ;
 }
