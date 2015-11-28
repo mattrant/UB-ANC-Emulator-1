@@ -23,7 +23,6 @@ UBEngine::UBEngine(QObject *parent) : QObject(parent)
 }
 
 void UBEngine::engineTracker(void) {
-    ;
 }
 
 void UBEngine::startEngine() {
