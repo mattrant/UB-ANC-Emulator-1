@@ -41,17 +41,27 @@ void UBServer::sendData(const QByteArray& data) {
     QByteArray* stream = new QByteArray(data);
 
     m_send_buffer.enqueue(stream);
+
+    if (m_size)
+        return;
+
+    QByteArray _data(*m_send_buffer.first());
+    _data.append(PACKET_END);
+    m_size = _data.size();
+
+    m_socket->write(_data);
 }
 
 QByteArray UBServer::getData() {
     QByteArray data;
 
-    if (!m_receive_buffer.isEmpty()) {
-        QByteArray* stream = m_receive_buffer.dequeue();
-        data = *stream;
+    if (m_receive_buffer.isEmpty())
+        return data;
 
-        delete stream;
-    }
+    QByteArray* stream = m_receive_buffer.dequeue();
+    data = *stream;
+
+    delete stream;
 
     return data;
 }
@@ -59,11 +69,19 @@ QByteArray UBServer::getData() {
 void UBServer::dataSentEvent(qint64 size) {
     m_size -= size;
 
-    if (!m_size) {
-        delete m_send_buffer.dequeue();
+    if (m_size)
+        return;
 
-        m_size = 0;
-    }
+    delete m_send_buffer.dequeue();
+
+    if (m_send_buffer.isEmpty())
+        return;
+
+    QByteArray data(*m_send_buffer.first());
+    data.append(PACKET_END);
+    m_size = data.size();
+
+    m_socket->write(data);
 }
 
 void UBServer::dataReadyEvent() {
@@ -81,11 +99,4 @@ void UBServer::dataReadyEvent() {
 }
 
 void UBServer::serverTracker() {
-    if (!m_size && !m_send_buffer.isEmpty()) {
-        QByteArray data(*m_send_buffer.first());
-        data.append(PACKET_END);
-        m_size = data.size();
-
-        m_socket->write(data);
-    }
 }
