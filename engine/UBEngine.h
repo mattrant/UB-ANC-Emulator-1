@@ -31,6 +31,9 @@ protected slots:
     void engineTracker(void);
 
     void uavAddedEvent(UASInterface* uav);
+
+protected:
+    double distance(double lat1, double lon1, double alt1, double lat2, double lon2, double alt2);
 };
 
 #endif // UBENGINE_H

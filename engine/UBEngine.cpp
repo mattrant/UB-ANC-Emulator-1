@@ -13,6 +13,8 @@
 #include "LinkManager.h"
 #include "UASWaypointManager.h"
 
+#include "mercatorprojection.h"
+
 UBEngine::UBEngine(QObject *parent) : QObject(parent)
 {
     m_timer = new QTimer(this);
@@ -120,29 +122,40 @@ void UBEngine::positionChangeEvent(UASInterface* uav) {
         if (_uav == uav)
             continue;
 
-        double dist = sqrt(pow(uav->getLocalX() - _uav->getLocalX(), 2) + pow(uav->getLocalY() - _uav->getLocalY(), 2) + pow(uav->getLocalZ() - _uav->getLocalZ(), 2));
+        char data[2];
+        double dist = distance(uav->getLatitude(), uav->getLongitude(), uav->getAltitudeAMSL(), _uav->getLatitude(), _uav->getLongitude(), _uav->getAltitudeAMSL());
+
+        data[0] = _obj->getUAV()->getUASID();
+        data[1] = false;
 
         if (dist < obj->getVR())
-            obj->snrSendData(QByteArray(1, _obj->getUAV()->getUASID()) + QByteArray(1, true));
-        else
-            obj->snrSendData(QByteArray(1, _obj->getUAV()->getUASID()) + QByteArray(1, false));
+            data[1] = true;
+
+        obj->snrSendData(QByteArray(data, 2));
+
+        data[0] = obj->getUAV()->getUASID();
+        data[1] = false;
 
         if (dist < _obj->getVR())
-            _obj->snrSendData(QByteArray(1, obj->getUAV()->getUASID()) + QByteArray(1, true));
-        else
-            _obj->snrSendData(QByteArray(1, obj->getUAV()->getUASID()) + QByteArray(1, false));
+            data[1] = true;
+
+        _obj->snrSendData(QByteArray(data, 2));
     }
 
     foreach (Waypoint* wp, uav->getWaypointManager()->getWaypointEditableList()) {
         if (wp->getAction() != MAV_CMD_DO_SET_ROI)
             continue;
 
-        double dist = sqrt(pow(uav->getLocalX() - wp->getX(), 2) + pow(uav->getLocalY() - wp->getY(), 2) + pow(uav->getLocalZ() - wp->getZ(), 2));
+        char data[2];
+        double dist = distance(uav->getLatitude(), uav->getLongitude(), uav->getAltitudeRelative(), wp->getLatitude(), wp->getLongitude(), wp->getAltitude());
+
+        data[0] = wp->getId();
+        data[1] = false;
 
         if (dist < obj->getVR())
-            obj->snrSendData(QByteArray(1, wp->getId()) + QByteArray(1, true));
-        else
-            obj->snrSendData(QByteArray(1, wp->getId()) + QByteArray(1, false));
+            data[1] = true;
+
+        obj->snrSendData(QByteArray(data, 2));
     }
 }
 
@@ -159,9 +172,21 @@ void UBEngine::networkEvent(UBObject* obj, const QByteArray& data) {
 //        if (_uav == uav)
 //            continue;
 
-        double dist = sqrt(pow(uav->getLocalX() - _uav->getLocalX(), 2) + pow(uav->getLocalY() - _uav->getLocalY(), 2) + pow(uav->getLocalZ() - _uav->getLocalZ(), 2));
+        double dist = distance(uav->getLatitude(), uav->getLongitude(), uav->getAltitudeAMSL(), _uav->getLatitude(), _uav->getLongitude(), _uav->getAltitudeAMSL());
 
         if (dist < obj->getCR())
             _obj->netSendData(data);
     }
+}
+
+double UBEngine::distance(double lat1, double lon1, double alt1, double lat2, double lon2, double alt2) {
+   double x1, y1, z1;
+   double x2, y2, z2;
+
+   projections::MercatorProjection proj;
+
+   proj.FromGeodeticToCartesian(lat1, lon1, alt1, x1, y1, z1);
+   proj.FromGeodeticToCartesian(lat2, lon2, alt2, x2, y2, z2);
+
+   return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2) + pow(z1 - z2, 2));
 }
