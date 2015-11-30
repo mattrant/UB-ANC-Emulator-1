@@ -5,11 +5,13 @@
 
 #include <QQueue>
 #include <QByteArray>
+#include <QAbstractSocket>
 
 #include "UBServer.h"
 
 class QTimer;
 class QProcess;
+class QTcpSocket;
 
 class UASInterface;
 
@@ -22,7 +24,7 @@ public:
 protected:
     UASInterface* m_uav;
 
-    quint8 m_link;
+    quint16 m_port;
 
     quint32 m_cr;
     quint32 m_vr;
@@ -33,6 +35,8 @@ protected:
     UBServer* m_net_server;
     UBServer* m_snr_server;
 
+    QTcpSocket* m_socket;
+
     QTimer* m_timer;
 
 signals:
@@ -42,12 +46,15 @@ signals:
 protected slots:
     void objectTracker(void);
 
-    void startConnection();
-    void startAgent();
-
+    void netClientConnectedEvent(quint16 port);
     void netDataReadyEvent(const QByteArray& data) { emit netDataReady(this, data); }
+
+    void snrClientConnectedEvent(quint16 port);
     void snrDataReadyEvent(const QByteArray& data) { emit snrDataReady(this, data); }
 
+    void connectedEvent();
+    void disconnectedEvent();
+    void errorEvent(QAbstractSocket::SocketError err);
 public slots:
     void setUAV(UASInterface* uav) {m_uav = uav;}
 
@@ -64,8 +71,6 @@ public slots:
 
 public:
     UASInterface* getUAV(void) {return m_uav;}
-
-    quint8 getLink(void) {return m_link;}
 
     quint32 getCR(void) {return m_cr;}
     quint32 getVR(void) {return m_vr;}
