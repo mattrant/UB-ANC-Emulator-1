@@ -97,6 +97,8 @@ void UBEngine::uavAddedEvent(UASInterface* uav) {
     obj->setVR(VISUAL_RANGE);
 
     connect(obj, SIGNAL(netDataReady(UBObject*,QByteArray)), this, SLOT(networkEvent(UBObject*,QByteArray)));
+
+    QLOG_INFO() << "New UAV Connected | MAV ID: " << uav->getUASID();
 }
 
 void UBEngine::positionChangeEvent(UASInterface* uav) {
