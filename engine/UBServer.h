@@ -5,9 +5,9 @@
 #include <QQueue>
 #include <QByteArray>
 
-class QTcpServer;
-class QTcpSocket;
 class QTimer;
+class QTcpSocket;
+class QTcpServer;
 
 class UBServer : public QObject
 {
@@ -20,7 +20,9 @@ public:
 private:
 
 signals:
+    void clientConnected(quint16 port);
     void dataReady(const QByteArray& data);
+
 
 public slots:
     void startServer(int port);
@@ -35,8 +37,8 @@ protected slots:
 
 protected:
 
-    QTcpServer* m_server;
     QTcpSocket* m_socket;
+    QTcpServer* m_server;
 
     QTimer* m_timer;
 
