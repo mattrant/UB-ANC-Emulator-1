@@ -34,6 +34,8 @@ void UBServer::newConnectionEvent() {
     connect(m_socket, SIGNAL(bytesWritten(qint64)), this, SLOT(dataSentEvent(qint64)));
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(dataReadyEvent()));
 
+    emit clientConnected(m_socket->localPort());
+
     m_timer->start();
 }
 
