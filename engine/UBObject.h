@@ -55,6 +55,7 @@ protected slots:
     void connectedEvent();
     void disconnectedEvent();
     void errorEvent(QAbstractSocket::SocketError err);
+
 public slots:
     void setUAV(UASInterface* uav) {m_uav = uav;}
 
