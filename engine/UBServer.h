@@ -23,7 +23,6 @@ signals:
     void clientConnected(quint16 port);
     void dataReady(const QByteArray& data);
 
-
 public slots:
     void startServer(int port);
     void sendData(const QByteArray& data);
@@ -36,7 +35,6 @@ protected slots:
     void serverTracker();
 
 protected:
-
     QTcpSocket* m_socket;
     QTcpServer* m_server;
 
