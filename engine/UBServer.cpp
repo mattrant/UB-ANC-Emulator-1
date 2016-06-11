@@ -47,6 +47,9 @@ void UBServer::sendData(const QByteArray& data) {
     if (m_size)
         return;
 
+    if (!m_socket)
+        return;
+
     QByteArray _data(*m_send_buffer.first());
     _data.append(PACKET_END);
     m_size = _data.size();
