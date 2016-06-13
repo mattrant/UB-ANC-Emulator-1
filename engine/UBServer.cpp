@@ -29,7 +29,7 @@ void UBServer::sendData(const QByteArray& data) {
     if (!m_socket)
         return;
 
-    m_socket->write(_data);
+    m_socket->write(data);
 }
 
 void UBServer::dataReadyEvent() {
