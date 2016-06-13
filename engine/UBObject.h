@@ -75,9 +75,6 @@ public:
 
     quint32 getCR(void) {return m_cr;}
     quint32 getVR(void) {return m_vr;}
-
-    QByteArray netGetData(void) {return m_net_server->getData();}
-    QByteArray snrGetData(void) {return m_snr_server->getData();}
 };
 
 #endif // UBOBJECT_H
