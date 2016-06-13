@@ -24,6 +24,7 @@ public slots:
 
 protected slots:
     void newConnectionEvent();
+    void dataReadyEvent();
 
 protected:
     QTcpSocket* m_socket;
