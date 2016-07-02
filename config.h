@@ -9,6 +9,7 @@
 #define SNR_PORT 7760
 
 #define AGENT_FILE "./agent"
+#define MISSION_FILE "/mission.txt"
 #define FIRMWARE_FILE "./firmware"
 
 #define OBJECTS_PATH "./objects"

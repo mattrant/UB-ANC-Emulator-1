@@ -28,13 +28,18 @@ void UBEngine::engineTracker(void) {
 }
 
 void UBEngine::startEngine() {
-    double lat = 43.000755;
-    double lon = -78.776023;
+    QDir dir(OBJECTS_PATH);
+    dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
-    int idx = QCoreApplication::arguments().indexOf("--waypoints");
-    if (idx > 0) {
+    int _instance = 0;
+    foreach (QString folder, dir.entryList()) {
+        UBObject* obj = new UBObject(this);
+
+        double lat = 43.000755;
+        double lon = -78.776023;
+
         UASWaypointManager wpm;
-        wpm.loadWaypoints(QCoreApplication::arguments().at(idx + 1));
+        wpm.loadWaypoints(QString(OBJECTS_PATH) + QString("/") + folder + QString(MISSION_FILE));
 
         if (wpm.getWaypointEditableList().count()) {
             const Waypoint* wp = wpm.getWaypoint(0);
@@ -42,14 +47,6 @@ void UBEngine::startEngine() {
             lat = wp->getLatitude();
             lon = wp->getLongitude();
         }
-    }
-
-    QDir dir(OBJECTS_PATH);
-    dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-
-    int _instance = 0;
-    foreach (QString folder, dir.entryList()) {
-        UBObject* obj = new UBObject(this);
 
         int port = MAV_PORT + _instance * 10;
         QString path = QString(OBJECTS_PATH) + QString("/") + folder;
@@ -76,12 +73,6 @@ void UBEngine::uavAddedEvent(UASInterface* uav) {
     if (!uav)
         return;    
 
-    int idx = QCoreApplication::arguments().indexOf("--waypoints");
-    if (idx > 0) {
-        uav->getWaypointManager()->loadWaypoints(QCoreApplication::arguments().at(idx + 1));
-        uav->getWaypointManager()->writeWaypoints();
-    }
-
     connect(uav, SIGNAL(globalPositionChanged(UASInterface*,double,double,double,quint64)), this, SLOT(positionChangeEvent(UASInterface*)));
 
     TCPLink* link = dynamic_cast<TCPLink*>(uav->getLinks()->first());
@@ -90,6 +81,12 @@ void UBEngine::uavAddedEvent(UASInterface* uav) {
         return;
 
     int i = link->getPort() - MAV_PORT;
+
+    QDir dir(OBJECTS_PATH);
+    dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    uav->getWaypointManager()->loadWaypoints(QString(OBJECTS_PATH) + QString("/") + dir.entryList()[i / 10] + QString(MISSION_FILE));
+    uav->getWaypointManager()->writeWaypoints();
 
     UBObject* obj = m_objs[i / 10];
     obj->setUAV(uav);
