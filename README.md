@@ -1,62 +1,60 @@
+Copyright © 2014, 2015, 2016 Jalil Modares
+
+This program is part of my Ph.D. Dissertation research in the Department of Electrical Engineering at the University at Buffalo. I work in UB's Multimedia Communications and Systems Laboratory with my Ph.D. adviser, Prof. Nicholas Mastronarde <http://www.eng.buffalo.edu/~nmastron/>.
+
+If you use this program for your work/research, please cite:
+J. Modares, N. Mastronarde, M. J. Medley, J. D. Matyjas, "UB-ANC: An Open Platform Testbed for Software-Defined Airborne Networking and Communications" <http://arxiv.org/abs/1509.08346>.
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+
 # UB-ANC Emulator
-The software emulator for UB-ANC, an open test-bed platform for airborne networking and communications
+An Emulation Framework for Multi-Agent Drone Networks
 
-===================================
+Build
+--------------
 
-There are three main steps to use UB-ANC Emulator:
+There are three main steps to build UB-ANC Emulator:
 
-1) build and configure ArduCopter firmware
+1) build ArduCopter firmware
+
+```
+git clone https://github.com/ArduPilot/ardupilot
+cd ardupilot
+git submodule update --init --recursive
+cd ArduCopter
+make sitl -j4
+```
 
 2) build APM Planner 
+  - https://github.com/ArduPilot/apm_planner
 
-3) build and configure UB-ANC Emulator
+3) build UB-ANC Emulator
 
-===================================
+```
+git clone https://github.com/jmodares/UB-ANC-Emulator
+mkdir build-emulator
+cd build-emulator
+qmake ../UB-ANC-Emulator
+make -j4
+```
 
-The steps for making ArduCopter firmware:
-
-1) git clone https://github.com/diydrones/ardupilot
-
-2) cd ardupilot/ArduCopter
-
-3) make sitl -j4
-
-4) ./ArduCopter.elf --home 43.000496,-78.777788,0,0 --model quad --wipe --instance 0
-
------------------------------------
-
-For building APM Planner, follow the steps here:
-
-https://github.com/diydrones/apm_planner
-
------------------------------------
+Configuration
+-------------
 
 In order to configure firmware, run the APM Planner, and make a TCP connection to firmware, and change these parameters:
+  - SYSID_THISMAV
+  - ARMING_CHECK
 
-1) SYSID_THISMAV
+For configuring UB-ANC Emulator, follow the steps below:
 
-2) ARMING_CHECK_ALL
+```
+mkdir objects
+cp path_to_ArduCopter.elf_and_eeprom.bin objects/your_drone_name/firmware_and_eeprom.bin
+cp path_to_agent objects/your_drone_name/agent
+```
 
------------------------------------
-
-For building and configuring UB-ANC Emulator, follow the steps below:
-
-1) git clone https://github.com/jmodares/UB-ANC-Emul
-
-2) cd UB-ANC-Emul
-
-3) qmake UB-ANC-Emul.pro
-
-4) make -j4
-
-5) mkdir objects
-
-6) cp path_to_ArduCopter.elf_and_eeprom.bin objects/your_drone_name/firmware_and_eeprom.bin
-
-7) cp path_to_agent objects/your_drone_name/agent
-
-8) ./emulator --waypoints mission.txt
-
------------------------------------
-
-Each port represents a drone, starting from 5763, 5773, etc. Mission Planner, APM Planner, QGroundStation, MAVProxy, ..., can be used to connect to drones, and see them in action.
+Each port represents an agent, starting from 5763, 5773, etc.
