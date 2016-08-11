@@ -4,7 +4,6 @@
 #include <QTcpSocket>
 
 UBServer::UBServer(QObject *parent) : QObject(parent),
-    m_server(NULL),
     m_socket(NULL)
 {
     m_server = new QTcpServer(this);
