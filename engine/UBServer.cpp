@@ -17,7 +17,7 @@ void UBServer::startServer(int port) {
 
 void UBServer::newConnectionEvent() {
     if (m_socket)
-        return;
+        disconnect(m_socket, SIGNAL(readyRead()), this, SLOT(dataReadyEvent()));
 
     m_socket = m_server->nextPendingConnection();
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(dataReadyEvent()));
