@@ -19,15 +19,8 @@ Build
 
 There are three main steps to build UB-ANC Emulator:
 
-1) build ArduCopter firmware
-
-```
-git clone https://github.com/ArduPilot/ardupilot
-cd ardupilot
-git submodule update --init --recursive
-cd ArduCopter
-make sitl -j4
-```
+1) build ArduCopter Software in the Loop (SITL):
+  - http://ardupilot.org/dev/docs/setting-up-sitl-on-linux.html
 
 2) build APM Planner 
   - https://github.com/ArduPilot/apm_planner
