@@ -2,12 +2,14 @@
 #define UBENGINE_H
 
 #include <QObject>
-#include <QList>
+#include <QVector>
 
 class QTimer;
 
 class UBObject;
 class UASInterface;
+
+class NS3Engine;
 
 class UBEngine : public QObject
 {
@@ -17,7 +19,9 @@ public:
 
 protected:
     QTimer* m_timer;
-    QList<UBObject*> m_objs;
+    QVector<UBObject*> m_objs;
+
+    NS3Engine* m_ns3;
 
 signals:
 

@@ -15,6 +15,8 @@
 
 #include "mercatorprojection.h"
 
+#include "NS3Engine.h"
+
 UBEngine::UBEngine(QObject *parent) : QObject(parent)
 {
     m_timer = new QTimer(this);
@@ -22,6 +24,8 @@ UBEngine::UBEngine(QObject *parent) : QObject(parent)
 
     connect(m_timer, SIGNAL(timeout()), this, SLOT(engineTracker()));
     connect(UASManager::instance(), SIGNAL(UASCreated(UASInterface*)), this, SLOT(uavAddedEvent(UASInterface*)));
+
+    m_ns3 = new NS3Engine(this);
 }
 
 void UBEngine::engineTracker(void) {
@@ -66,6 +70,8 @@ void UBEngine::startEngine() {
         _instance++;
     }
 
+    m_ns3->startEngine(&m_objs);
+
     m_timer->start();
 }
 
@@ -74,6 +80,7 @@ void UBEngine::uavAddedEvent(UASInterface* uav) {
         return;    
 
     connect(uav, SIGNAL(globalPositionChanged(UASInterface*,double,double,double,quint64)), this, SLOT(positionChangeEvent(UASInterface*)));
+    connect(uav, SIGNAL(globalPositionChanged(UASInterface*,double,double,double,quint64)), m_ns3, SLOT(positionChangeEvent(UASInterface*)));
 
     TCPLink* link = dynamic_cast<TCPLink*>(uav->getLinks()->first());
 
@@ -93,7 +100,8 @@ void UBEngine::uavAddedEvent(UASInterface* uav) {
     obj->setCR(COMM_RANGE);
     obj->setVR(VISUAL_RANGE);
 
-    connect(obj, SIGNAL(netDataReady(UBObject*,QByteArray)), this, SLOT(networkEvent(UBObject*,QByteArray)));
+//    connect(obj, SIGNAL(netDataReady(UBObject*,QByteArray)), this, SLOT(networkEvent(UBObject*,QByteArray)));
+    connect(obj, SIGNAL(netDataReady(UBObject*,QByteArray)), m_ns3, SLOT(networkEvent(UBObject*,QByteArray)));
 
     QLOG_INFO() << "New UAV Connected | MAV ID: " << uav->getUASID();
 }
