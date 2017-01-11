@@ -6,6 +6,7 @@ LIBS += -lns3.26-core-debug \
     -lns3.26-wifi-debug \
     -lns3.26-mobility-debug \
     -lns3.26-olsr-debug \
+    -lns3.26-aodv-debug \
     -L$${NS3ROOT} \
     -Wl,-rpath,$${NS3ROOT} \
 
