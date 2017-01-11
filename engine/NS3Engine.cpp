@@ -124,10 +124,15 @@ void NS3Engine::startNS3() {
         wifiPhy.EnableAsciiAll(ascii.CreateFileStream("wifi-adhoc.tr"));
         wifiPhy.EnablePcap("wifi-adhoc", devices);
         // Trace routing tables
-        Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper>("wifi-adhoc.routes", std::ios::out);
-        olsr.PrintRoutingTableAllEvery(Seconds(2), routingStream);
-        Ptr<OutputStreamWrapper> neighborStream = Create<OutputStreamWrapper>("wifi-adhoc.neighbors", std::ios::out);
-        olsr.PrintNeighborCacheAllEvery(Seconds(2), neighborStream);
+        Ptr<OutputStreamWrapper> olsrRoutingStream = Create<OutputStreamWrapper>("olsr.routes", std::ios::out);
+        olsr.PrintRoutingTableAllEvery(Seconds(2), olsrRoutingStream);
+        Ptr<OutputStreamWrapper> olsrNeighborStream = Create<OutputStreamWrapper>("olsr.neighbors", std::ios::out);
+        olsr.PrintNeighborCacheAllEvery(Seconds(2), olsrNeighborStream);
+
+        Ptr<OutputStreamWrapper> aodvRoutingStream = Create<OutputStreamWrapper>("aodv.routes", std::ios::out);
+        aodv.PrintRoutingTableAllEvery(Seconds(2), aodvRoutingStream);
+        Ptr<OutputStreamWrapper> aodvNeighborStream = Create<OutputStreamWrapper>("aodv.neighbors", std::ios::out);
+        aodv.PrintNeighborCacheAllEvery(Seconds(2), aodvNeighborStream);
     }
 
     Simulator::Run();
