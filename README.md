@@ -3,7 +3,7 @@ Copyright © 2014, 2015, 2016 Jalil Modares
 This program is part of my Ph.D. Dissertation research in the Department of Electrical Engineering at the University at Buffalo. I work in UB's Multimedia Communications and Systems Laboratory with my Ph.D. adviser, Prof. Nicholas Mastronarde <http://www.eng.buffalo.edu/~nmastron/>.
 
 If you use this program for your work/research, please cite:
-J. Modares, N. Mastronarde, M. J. Medley, J. D. Matyjas, "UB-ANC: An Open Platform Testbed for Software-Defined Airborne Networking and Communications" <http://arxiv.org/abs/1509.08346>.
+J. Modares, N. Mastronarde, K. Dantu, "UB-ANC Emulator: An Emulation Framework for Multi-agent Drone Networks" <https://doi.org/10.1109/SIMPAR.2016.7862404>.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.
 
