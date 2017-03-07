@@ -1,4 +1,4 @@
-Copyright © 2014 - 2017 Jalil Modares
+Copyright © 2015 - 2017 Jalil Modares
 
 This program is part of my Ph.D. Dissertation research in the Department of Electrical Engineering at the University at Buffalo. I work in UB's Multimedia Communications and Systems Laboratory with my Ph.D. adviser, Prof. Nicholas Mastronarde <http://www.eng.buffalo.edu/~nmastron/>.
 
