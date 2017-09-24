@@ -97,8 +97,8 @@ void NS3Engine::startNS3() {
 
     Ipv4ListRoutingHelper list;
     list.Add(staticRouting, 0);
-    list.Add(olsr, 10);
-    list.Add(aodv, 20);
+    //list.Add(olsr, 10);
+    //list.Add(aodv, 0);
 
     InternetStackHelper internet;
     internet.SetRoutingHelper(list); // has effect on the next Install()
@@ -134,6 +134,8 @@ void NS3Engine::startNS3() {
         Ptr<OutputStreamWrapper> aodvNeighborStream = Create<OutputStreamWrapper>("aodv.neighbors", std::ios::out);
         aodv.PrintNeighborCacheAllEvery(Seconds(2), aodvNeighborStream);
     }
+
+
 
     Simulator::Run();
     Simulator::Destroy();
@@ -174,6 +176,7 @@ void NS3Engine::networkEvent(UBObject* obj, const QByteArray& data) {
         return;
 
     vdata[index] += data;
+   // std::cout<<"Network Event..."<<std::endl;
 
     while (vdata[index].contains(PACKET_END)) {
         int bytes = vdata[index].indexOf(PACKET_END);
@@ -222,4 +225,17 @@ void NS3Engine::positionChangeEvent(UASInterface* uav) {
 
 //    Simulator::ScheduleNow(&MobilityModel::SetPosition, mm, pos);
     Simulator::ScheduleWithContext(m_nodes.Get(index)->GetId(), Time(0), &MobilityModel::SetPosition, mm, pos);
+}
+
+void NS3Engine::bringDownNode(UASInterface* uav){
+    int index = 0;
+    for (int i = 0; i < m_objs->size(); i++) {
+        if (m_objs->at(i)->getUAV() == uav) {
+            index = i;
+            break;
+        }
+    }
+    //brings down the interface for the specified node so that the interface willnot be considered during IPV4 routing
+   Ptr<Ipv4> ipv4 =  m_nodes.Get(index)->GetDevice(0)->GetNode()->GetObject<Ipv4>();
+   ipv4->SetDown(ipv4->GetInterfaceForDevice(m_nodes.Get(index)->GetDevice(0)));
 }
